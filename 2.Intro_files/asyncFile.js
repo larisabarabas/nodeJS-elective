@@ -51,8 +51,15 @@ async function myAsynchronousFunction(){
     // myPromise().then(message => {
     //     console.log(message);
     // })
-    const message = await myPromise();
-    console.log("This is the message:", message)
+
+    // const message = await myPromise();
+    // console.log("This is the message:", message)
+    try{
+        const message = await myPromise();
+        console.log("This is the message:", message)
+    } catch(error){
+        throw(error);
+    }
 }
 
 myAsynchronousFunction();

@@ -1,29 +1,57 @@
-const express =  require('express');
+// const app = require("express")();
+const express = require("express");
 const app = express();
-const port = 8080;
 
-// /about?firstName =______&lastName=__________
-app.get("/about", (req, res)=>{
-    console.log(req.query)
-    res.send(req.query.firstName+ ' ' + req.query.lastName)
-})
+const request = require("request");
+const bodyParser = require("body-parser");
 
-// URL parameter
-app.get("/age/:myAge/:height", (req, res)=>{
-    console.log(req.params)
-    res.send(req.params)
-})
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+// parse application/json
+app.use(bodyParser.json());
 
+// allow to serve static files from here
+app.use(express.static('public'));
 
-app.get('/', (req,res)=>{
-    res.status(200).send('try');
-    // no code below !!!
+app.get("/", (req, res) => {
+    res.sendFile(__dirname + "/../public/index.html");
 });
 
+// query string
+// /about?firstName=______&lastName=_________
+app.get("/about", (req, res) => {
+    res.send(req.query.firstName + " " + req.query.lastName);
+});
 
-const server = app.listen(port, function(error){
-    if(error){
-        console.log('There has been an error while running the server')
+app.get("/aboutme", (req, res) => {
+    const response = {
+        firstName: "Anders",
+        lastName: "Latif"
+    };
+    res.json(response);
+});
+
+// Request parameter / URL parameter
+app.get("/age/:myAge/:height", (req, res) => {
+    res.send(req.params.myAge);
+});
+
+app.post("/myfavoriteanimal", (req, res) => {
+    res.send("Your favorite animal is: " + req.body.favoriteAnimal);
+}); 
+
+app.get("/server-side-request", (req, res)=>{
+    request('http://www.google.com', function (error, response, body) {
+        console.log('error:', error); // Print the error if one occurred
+        console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+        //console.log('body:', body); // Print the HTML for the Google homepage.
+        res.send(body)
+    });
+});
+
+const server = app.listen(3000, (error) => {
+    if (error) {
+        console.log("Error running the server ", error);
     }
-    console.log(`Server is listening on port`, server.address().port)
-})
+    console.log("The server is running on port ", server.address().port);
+});
